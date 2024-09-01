@@ -41,7 +41,7 @@ $(document).ready(function(){
         loop: true
     });
 
-    var typed = new Typed(".typing-2", {
+    var typed2 = new Typed(".typing-2", {
         strings: ["Front-end Developers", "Website Makers", "Talented Coder"],
         typeSpeed: 100,
         backSpeed: 60,
@@ -50,11 +50,10 @@ $(document).ready(function(){
 
     // owl carousel script
     $('.carousel').owlCarousel({
-        strings: ["Front-end Developer", "Website Maker", "Talented Coder"],
         margin: 20,
         loop: true,
         autoplay: true,
-        autoplayTimeOut: 2000,
+        autoplayTimeout: 2000,
         autoplayHoverPause: true,
         responsive: {
             0:{
@@ -72,3 +71,66 @@ $(document).ready(function(){
         }
     });
 });
+
+// Cube and image overlay script
+const cube = document.querySelector(".cube");
+const cubeContainer = document.querySelector(".cube-container");
+const imageOverlay = document.querySelector(".image-overlay");
+let mouseX = 0;
+let mouseY = 0;
+let cubeX = 0;
+let cubeY = 0;
+let autoRotate = true;
+let perspective = 1000;
+
+// Function to rotate the cube automatically
+function rotateCube() {
+  if (autoRotate) {
+    cubeX += 0.5;
+    cubeY += 0.5;
+    cube.style.transform = `rotateX(${cubeX}deg) rotateY(${cubeY}deg)`;
+  }
+  requestAnimationFrame(rotateCube);
+}
+
+document.addEventListener("mousemove", (e) => {
+  autoRotate = false; // Stop auto rotation on mouse move
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+
+  const centerX = window.innerWidth / 2;
+  const centerY = window.innerHeight / 2;
+
+  const deltaX = mouseX - centerX;
+  const deltaY = mouseY - centerY;
+
+  cubeX = deltaY * 0.1;
+  cubeY = deltaX * -0.1;
+
+  cube.style.transform = `rotateX(${cubeX}deg) rotateY(${cubeY}deg)`;
+
+  clearTimeout(resetRotation); // Clear the previous timer
+  resetRotation = setTimeout(() => (autoRotate = true), 3000); // Reset auto rotation after 3 seconds
+});
+
+document.addEventListener("wheel", (e) => {
+  perspective += e.deltaY * 0.5;
+  perspective = Math.max(500, Math.min(2000, perspective)); // Limit the perspective to a range
+  cubeContainer.style.perspective = `${perspective}px`;
+});
+
+// Add hover effect for cube faces
+document.querySelectorAll(".face").forEach((face) => {
+  face.addEventListener("mouseenter", (e) => {
+    imageOverlay.style.backgroundImage = getComputedStyle(face).backgroundImage;
+    imageOverlay.style.opacity = 0.2; // Make the overlay visible
+  });
+
+  face.addEventListener("mouseleave", () => {
+    imageOverlay.style.opacity = 0; // Hide the overlay
+  });
+});
+
+let resetRotation = setTimeout(() => (autoRotate = true), 3000); // Start auto rotation after 3 seconds
+
+rotateCube(); // Initial call to start the rotation
